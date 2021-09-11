@@ -11,8 +11,10 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -24,6 +26,8 @@ import javax.validation.constraints.Size;
 
 
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 /**
@@ -51,6 +55,16 @@ public class Usuario implements Serializable {
     @Column(name = "create_at", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date createAt;
+    
+    
+    
+    /*
+	 * un usuario puede tiene una rol pero una rol puede tener muchos clientes
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "rol_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Role rol;
     
  // < -- crear la fecha en automatico-->
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -99,6 +113,18 @@ public class Usuario implements Serializable {
 
 	public void setCreateAt(Date createAt) {
 		this.createAt = createAt;
+	}
+
+
+
+	public Role getRol() {
+		return rol;
+	}
+
+
+
+	public void setRol(Role rol) {
+		this.rol = rol;
 	}
 
 
