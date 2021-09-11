@@ -11,6 +11,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -57,7 +59,7 @@ public class Usuario implements Serializable {
         createAt = new Date();
     }
 
-    
+       
     
     // < -- metodos get y set Fin-->
 	public Long getId() {
@@ -98,14 +100,8 @@ public class Usuario implements Serializable {
 	public void setCreateAt(Date createAt) {
 		this.createAt = createAt;
 	}
-    
-   
-    
-   
-      
-  
 
-	
+
     
     
 	 // < -- metodos get y set Fin-->
