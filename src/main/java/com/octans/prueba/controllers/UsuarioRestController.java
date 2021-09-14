@@ -180,7 +180,7 @@ public class UsuarioRestController {
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 	}
 	
-	@GetMapping("/user/filtrar/{term}")
+	@GetMapping("/users/filtrar/{term}")
     @ResponseStatus(HttpStatus.OK)
     public List<Usuario> findByNombre(@PathVariable String term) {
           System.out.println("*Llego con: "+term);
