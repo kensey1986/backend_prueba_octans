@@ -62,9 +62,10 @@ public class Usuario implements Serializable {
 	 * un usuario puede tiene una rol pero una rol puede tener muchos clientes
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "rol_id")
+    @JoinColumn(nullable = true, name = "rol_id")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Role rol;
+    
     
  // < -- crear la fecha en automatico-->
     @DateTimeFormat(pattern = "yyyy-MM-dd")

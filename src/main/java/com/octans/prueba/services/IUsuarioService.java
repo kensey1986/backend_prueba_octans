@@ -18,6 +18,8 @@ public interface IUsuarioService {
 	
 	public void delete(Long id);
 	
+	public List<Usuario> findByNombre(String term);
+	
 	
 	
 	

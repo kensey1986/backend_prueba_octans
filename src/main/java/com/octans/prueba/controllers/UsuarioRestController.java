@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -82,7 +82,8 @@ public class UsuarioRestController {
 		
 	@PostMapping("/users")
 	public ResponseEntity<?> create(@Valid @RequestBody Usuario usuario, BindingResult result) {
-		
+		System.out.println("** ----- llego al metodo crear -----**");
+		System.out.println(usuario);
 		Usuario usuarioNew = null;
 		Map<String, Object> response = new HashMap<>();
 		
@@ -142,6 +143,9 @@ public class UsuarioRestController {
 		try {
 			
 			usuarioActual.setNombre(usuario.getNombre());
+			usuarioActual.setEstado(usuario.getEstado());
+			usuarioActual.setRol(usuario.getRol());
+			
 			usuarioUpdated = usuarioService.save(usuarioActual);
 
 		} catch (DataAccessException e) {
@@ -159,7 +163,7 @@ public class UsuarioRestController {
 	
 	@DeleteMapping("/users/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
-		System.out.println("** ----- llego al metodo eliminar -----**");
+		
 		Map<String, Object> response = new HashMap<>();
 		
 		try {
@@ -175,6 +179,13 @@ public class UsuarioRestController {
 		
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 	}
+	
+	@GetMapping("/user/filtrar/{term}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Usuario> findByNombre(@PathVariable String term) {
+          System.out.println("*Llego con: "+term);
+        return usuarioService.findByNombre(term);
+    }
 	
 	
 		
