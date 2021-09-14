@@ -1,4 +1,3 @@
-
 package com.octans.prueba.controllers;
 
 
@@ -12,12 +11,12 @@ import javax.validation.Valid;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.dao.DataAccessException;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,63 +26,61 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RestController;
 
+import com.octans.prueba.entity.Role;
+import com.octans.prueba.services.IRoleService;
 
 
 
-
-import com.octans.prueba.entity.Usuario;
-import com.octans.prueba.services.IUsuarioService;
-
-
-
-
-
-@CrossOrigin(origins = {  "*" })
+@CrossOrigin(origins = { "*" })
 @RestController
 @RequestMapping("/api")
-public class UsuarioRestController {
-	
-	
+public class RoleRestController {
 
 	@Autowired
-	private IUsuarioService usuarioService;
+	private IRoleService roleService;
 	
 	
-	@GetMapping("/users")
-	public List<Usuario> index() {
-		return usuarioService.findAll();
+	
+	// private final Logger log = LoggerFactory.getLogger(ClienteRestController.class);
+	
+	
+	@GetMapping("/roles")
+	public List<Role> index() {
+		return roleService.findAll();
 	}
 	
-	@GetMapping("/users/{id}")
+	
+	
+	@GetMapping("/roles/{id}")
 	public ResponseEntity<?> show(@PathVariable Long id) {
 		
-		Usuario usuario = null;
+		Role role = null;
 		Map<String, Object> response = new HashMap<>();
 		
 		try {
-			usuario = usuarioService.findById(id);
+			role = roleService.findById(id);
 		} catch(DataAccessException e) {
 			response.put("mensaje", "Error al realizar la consulta en la base de datos");
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		if(usuario == null) {
-			response.put("mensaje", "El Usuario ID: ".concat(id.toString().concat(" no existe en la base de datos!")));
+		if(role == null) {
+			response.put("mensaje", "El Rol ID: ".concat(id.toString().concat(" no existe en la base de datos!")));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		}
 		
-		return new ResponseEntity<Usuario>(usuario, HttpStatus.OK);
+		return new ResponseEntity<Role>(role, HttpStatus.OK);
 	}
 	
+	
+	
+	@PostMapping("/roles")
+	public ResponseEntity<?> create(@Valid @RequestBody Role role, BindingResult result) {
 		
-	@PostMapping("/users")
-	public ResponseEntity<?> create(@Valid @RequestBody Usuario usuario, BindingResult result) {
-		
-		Usuario usuarioNew = null;
+		Role roleNew = null;
 		Map<String, Object> response = new HashMap<>();
 		
 		if(result.hasErrors()) {
@@ -97,9 +94,8 @@ public class UsuarioRestController {
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
 		}
 		
-		try {   
-                      
-			usuarioNew = usuarioService.save(usuario);
+		try {
+			roleNew = roleService.save(role);
 		} catch(DataAccessException e) {
 			response.put("mensaje", "Error al realizar el insert en la base de datos");
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
@@ -107,19 +103,18 @@ public class UsuarioRestController {
                         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		response.put("mensaje", "El Usuario ha sido creado con éxito!");
-		response.put("usuario", usuarioNew);
+		response.put("mensaje", "El ROL ha sido creado con éxito!");
+		response.put("role", roleNew);
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
 	
 	
+	@PutMapping("/roles/{id}")
+	public ResponseEntity<?> update(@Valid @RequestBody Role role, BindingResult result, @PathVariable Long id) {
 
-	@PutMapping("/users/{id}")
-	public ResponseEntity<?> update(@Valid @RequestBody Usuario usuario, BindingResult result, @PathVariable Long id) {
+		Role roleActual = roleService.findById(id);
 
-		Usuario usuarioActual = usuarioService.findById(id);
-
-		Usuario usuarioUpdated = null;
+		Role roleUpdated = null;
 
 		Map<String, Object> response = new HashMap<>();
 
@@ -134,48 +129,51 @@ public class UsuarioRestController {
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
 		}
 		
-		if (usuarioActual == null) {
-			response.put("mensaje", "Error: no se pudo editar, el Usuario ID: "
+		if (roleActual == null) {
+			response.put("mensaje", "Error: no se pudo editar, el Rol ID: "
 					.concat(id.toString().concat(" no existe en la base de datos!")));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		}
+
 		try {
 			
-			usuarioActual.setNombre(usuario.getNombre());
-			usuarioUpdated = usuarioService.save(usuarioActual);
+			roleActual.setNombre(role.getNombre());
+			
+			roleUpdated = roleService.save(roleActual);
 
 		} catch (DataAccessException e) {
-			response.put("mensaje", "Error al actualizar el USUARIO en la base de datos");
+			response.put("mensaje", "Error al actualizar el ROl en la base de datos");
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			response.put("dato", e.getMostSpecificCause().getMessage());
                         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		response.put("mensaje", "El Usuario ha sido actualizado con éxito!");
-		response.put("user", usuarioUpdated);
+		response.put("mensaje", "El Barrio ha sido actualizado con éxito!");
+		response.put("role", roleUpdated);
 
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
 	
-	@DeleteMapping("/users/{id}")
+	
+	@DeleteMapping("/roles/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
-		System.out.println("** ----- llego al metodo eliminar -----**");
+		
 		Map<String, Object> response = new HashMap<>();
 		
 		try {
-						
-			usuarioService.delete(id);
+			roleService.delete(id);
 		} catch (DataAccessException e) {
-			response.put("mensaje", "Error al eliminar el Usuario de la base de datos");
+			response.put("mensaje", "Error al eliminar el Rol de la base de datos");
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		response.put("mensaje", "El Usuario eliminado con éxito!");
+		response.put("mensaje", "Rol eliminado con éxito!");
 		
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 	}
 	
 	
-		
+	
+	
 }
